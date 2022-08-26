@@ -22,8 +22,21 @@ void Lexer::read_char() {
   ++read_position;
 }
 
+std::string Lexer::read_identifier() {
+  size_t position = this->position;
+  while (is_letter(ch)) {
+    read_char();
+  }
+  return input.substr(position, this->position - position);
+}
+
+bool Lexer::is_letter(char ch) {
+  return ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ch == '_';
+}
+
 token::Token Lexer::next_token() {
   token::Token tok;
+  std::printf("Parsing %c", ch);
   switch (ch) {
     case '=':
       tok = token::Token(token::ASSIGN, std::string(1, ch));
@@ -53,7 +66,14 @@ token::Token Lexer::next_token() {
       tok = token::Token(token::_EOF, "");
       break;
     default:
-      throw std::logic_error("Unknown token token:" + std::string(1, ch));
+      if (is_letter(ch)) {
+        tok.type = token::IDENT;
+        tok.literal = read_identifier();
+        return tok;
+      } else {
+        tok.type = token::ILLEGAL;
+        tok.literal = ch;
+      }
       break;
   }
   read_char();

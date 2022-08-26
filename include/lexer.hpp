@@ -15,6 +15,8 @@ namespace monkeycpp::lexer {
 
     void read_char();
     token::Token next_token();
+    std::string read_identifier();
+    bool is_letter(char);
   };
 }
 
